@@ -7,8 +7,8 @@
   <!-- Netlify Identity 위젯 로드 -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <style>
-    /* 간단한 레이아웃 스타일 (필요에 따라 조정) */
     body { font-family: sans-serif; padding: 2rem; }
+    h1 { margin-bottom: 1rem; }
     .links a { margin-right: 1rem; text-decoration: none; color: #0066cc; }
     #nas-link { display: none; margin-top: 1rem; }
   </style>
@@ -16,40 +16,53 @@
 <body>
   <h1>직원 대시보드</h1>
 
-  <!-- 1) 직원·광고주 모두 접근 가능한 툴 링크 -->
+  <!-- 직원·광고주 모두 접근 가능한 툴 링크 -->
   <div class="links">
     <a href="/tools/tool-a.html">툴 A</a>
     <a href="/tools/tool-b.html">툴 B</a>
   </div>
 
-  <!-- 2) 광고주 전용 NAS 공유 링크 (초기엔 숨김) -->
+  <!-- 광고주 전용 NAS 공유 링크 (초기엔 숨김) -->
   <div id="nas-link">
     <a href="http://your-nas-ip/shared" target="_blank">광고주 전용 저장소</a>
   </div>
 
   <script>
-    // Netlify Identity 초기화
-    netlifyIdentity.init();
+    // 1) Netlify Identity 초기화
+    if (window.netlifyIdentity) {
+      netlifyIdentity.init();
+    } else {
+      console.error('Netlify Identity widget 로드 실패');
+    }
 
-    // 로그인 직후 역할 체크
+    // 2) 페이지 진입 시: 로그인 되어 있지 않으면 /login.html 로 이동
+    netlifyIdentity.on('init', user => {
+      if (!user) {
+        location.replace('/login.html');
+      } else {
+        checkRoles(user.app_metadata.roles);
+      }
+    });
+
+    // 3) 로그인 직후: 역할 체크
     netlifyIdentity.on('login', user => {
-      const roles = (user && user.app_metadata && user.app_metadata.roles) || [];
+      checkRoles(user.app_metadata.roles);
+    });
+
+    // 역할 검사 함수
+    function checkRoles(roles = []) {
+      // 직원(employee) 역할이 없는 경우 로그인 페이지로 강제 이동
+      if (!roles.includes('employee')) {
+        alert('직원 계정으로 로그인해 주세요.');
+        netlifyIdentity.logout();
+        location.replace('/login.html');
+        return;
+      }
+      // 광고주(advertiser) 역할이 있으면 NAS 링크 노출
       if (roles.includes('advertiser')) {
         document.getElementById('nas-link').style.display = 'block';
-      } else {
-        document.getElementById('nas-link').style.display = 'none';
       }
-    });
-
-    // 페이지 로드 시 이미 로그인된 상태라면 한 번 더 검사
-    netlifyIdentity.on('init', user => {
-      if (user) {
-        const roles = (user.app_metadata && user.app_metadata.roles) || [];
-        if (roles.includes('advertiser')) {
-          document.getElementById('nas-link').style.display = 'block';
-        }
-      }
-    });
+    }
   </script>
 </body>
 </html>
