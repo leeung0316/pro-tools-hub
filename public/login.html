@@ -1,26 +1,19 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <title>로그인</title>
-  <!-- ──────── 여기에 붙이기 ──────── -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-</head>
-<body>
-  <!-- ... -->
-  <!-- 로그인 버튼 -->
-  <button id="login-btn">로그인 / 회원가입</button>
+<!-- load Identity widget -->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+  // 위젯 초기화
+  const netlifyIdentity = window.netlifyIdentity;
+  netlifyIdentity.init();
 
-  <!-- ▼ 여기에 붙이기 ▼ -->
-  <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.init();
-      document.getElementById('login-btn')
-        .addEventListener('click', () => netlifyIdentity.open());
-      netlifyIdentity.on('login', () => {
-        location.href = '/dashboard/employee.html';
-      });
-    }
-  </script>
-</body>
-</html>
+  // 페이지가 로드되면 모달을 띄우고 싶으면 주석 해제
+  // netlifyIdentity.open();
+
+  // 로그인 버튼에 모달 연결 (만약 직접 버튼을 쓰셨다면)
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("btn-login");
+    if (btn) btn.addEventListener("click", () => netlifyIdentity.open());
+  });
+</script>
+
+<!-- 예시 로그인/회원가입 버튼 -->
+<button id="btn-login">로그인 / 회원가입</button>
