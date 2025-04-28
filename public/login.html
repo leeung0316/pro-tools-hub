@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>로그인</title>
+  <!-- ──────── 여기에 붙이기 ──────── -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <!-- ... -->
+  <!-- 로그인 버튼 -->
+  <button id="login-btn">로그인 / 회원가입</button>
+
+  <!-- ▼ 여기에 붙이기 ▼ -->
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.init();
+      document.getElementById('login-btn')
+        .addEventListener('click', () => netlifyIdentity.open());
+      netlifyIdentity.on('login', () => {
+        location.href = '/dashboard/employee.html';
+      });
+    }
+  </script>
+</body>
+</html>

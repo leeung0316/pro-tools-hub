@@ -1,0 +1,12 @@
+<script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', user => {
+        if (!user) location.href = '/login.html';
+      });
+      netlifyIdentity.init();
+    }
+  </script>
+  <!DOCTYPE html>
+  <html lang="ko">
+  <!-- … -->
+  
