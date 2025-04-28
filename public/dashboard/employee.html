@@ -1,42 +1,55 @@
-
-<script>
-  netlifyIdentity.on('init', user => {
-    if (!user) {
-      window.location.href = '/login.html';
-    }
-  });
-</script>
-
-<script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on('init', user => {
-        if (!user) location.href = '/login.html';
-      });
-      netlifyIdentity.init();
-    }
-  </script>
-  <!DOCTYPE html>
-  <html lang="ko">
-  <!-- … -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>직원 대시보드</title>
+  <!-- Netlify Identity 위젯 로드 -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>netlifyIdentity.init();</script>
+  <style>
+    /* 간단한 레이아웃 스타일 (필요에 따라 조정) */
+    body { font-family: sans-serif; padding: 2rem; }
+    .links a { margin-right: 1rem; text-decoration: none; color: #0066cc; }
+    #nas-link { display: none; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>직원 대시보드</h1>
 
-<!-- 직원·광고주 공용 섹션 -->
-<div>
-  <a href="/tools/tool-a.html">툴 A</a>
-  <a href="/tools/tool-b.html">툴 B</a>
-</div>
+  <!-- 1) 직원·광고주 모두 접근 가능한 툴 링크 -->
+  <div class="links">
+    <a href="/tools/tool-a.html">툴 A</a>
+    <a href="/tools/tool-b.html">툴 B</a>
+  </div>
 
-<!-- 광고주 전용 링크 -->
-<script>
-  netlifyIdentity.on('login', user => {
-    const roles = user.app_metadata.roles || [];
-    if (roles.includes('advertiser')) {
-      document.getElementById('nas-link').style.display = 'block';
-    }
-  });
-</script>
+  <!-- 2) 광고주 전용 NAS 공유 링크 (초기엔 숨김) -->
+  <div id="nas-link">
+    <a href="http://your-nas-ip/shared" target="_blank">광고주 전용 저장소</a>
+  </div>
 
-<a id="nas-link" href="http://your-nas-ip/shared" style="display:none;">
-  광고주 전용 저장소
-</a>
+  <script>
+    // Netlify Identity 초기화
+    netlifyIdentity.init();
+
+    // 로그인 직후 역할 체크
+    netlifyIdentity.on('login', user => {
+      const roles = (user && user.app_metadata && user.app_metadata.roles) || [];
+      if (roles.includes('advertiser')) {
+        document.getElementById('nas-link').style.display = 'block';
+      } else {
+        document.getElementById('nas-link').style.display = 'none';
+      }
+    });
+
+    // 페이지 로드 시 이미 로그인된 상태라면 한 번 더 검사
+    netlifyIdentity.on('init', user => {
+      if (user) {
+        const roles = (user.app_metadata && user.app_metadata.roles) || [];
+        if (roles.includes('advertiser')) {
+          document.getElementById('nas-link').style.display = 'block';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
