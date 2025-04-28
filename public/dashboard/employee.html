@@ -20,3 +20,23 @@
   <!-- … -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>netlifyIdentity.init();</script>
+
+<!-- 직원·광고주 공용 섹션 -->
+<div>
+  <a href="/tools/tool-a.html">툴 A</a>
+  <a href="/tools/tool-b.html">툴 B</a>
+</div>
+
+<!-- 광고주 전용 링크 -->
+<script>
+  netlifyIdentity.on('login', user => {
+    const roles = user.app_metadata.roles || [];
+    if (roles.includes('advertiser')) {
+      document.getElementById('nas-link').style.display = 'block';
+    }
+  });
+</script>
+
+<a id="nas-link" href="http://your-nas-ip/shared" style="display:none;">
+  광고주 전용 저장소
+</a>

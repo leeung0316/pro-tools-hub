@@ -1,0 +1,14 @@
+<script>
+    netlifyIdentity.on('init', user => {
+      if (!user) {
+        // 로그인 안 하면 login.html 로
+        return window.location.href = '/login.html';
+      }
+      const roles = user.app_metadata && user.app_metadata.roles || [];
+      if (!roles.includes('admin')) {
+        // admin 역할이 아니면 대시보드로
+        return window.location.href = '/dashboard/employee.html';
+      }
+    });
+  </script>
+  
